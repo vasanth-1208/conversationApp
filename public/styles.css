@@ -1,0 +1,335 @@
+/* ===== General Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* =========================
+   LOGIN PAGE
+========================= */
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.login-box {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #333;
+}
+
+.login-box .subtitle {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.login-box input:focus {
+  border-color: #075e54;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: #075e54;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.login-box button:hover {
+  background: #07bc6d;
+}
+
+.hint {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #888;
+}
+
+/* =========================
+   CHAT PAGE - Instagram Theme
+========================= */
+/* Chat container */
+.chat-container {
+  width: 100%;
+  max-width: 420px;
+  height: 600px;
+  background: #fafafa;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+.chat-header {
+  background: #405de6;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.chat-header .header-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+
+/* Messages */
+#messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #e0e0e0;
+}
+
+/* Message bubble */
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin: 8px 0;
+  max-width: 75%;
+}
+
+.message .avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #888;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.message .content {
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Sent messages */
+.message.sent {
+  flex-direction: row-reverse;
+  margin-left: auto;
+}
+
+.message.sent .avatar {
+  margin-left: 8px;
+  margin-right: 0;
+  background: #007aff; /* Blue bubble */
+}
+
+.message.sent .content {
+  background: #007aff;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Received messages */
+.message.received .content {
+  background: #fff;
+  color: #000;
+  border-bottom-left-radius: 4px;
+}
+
+/* Input area */
+.input-area {
+  display: flex;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  outline: none;
+  margin-right: 8px;
+}
+
+.input-area button {
+  background: #405de6;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.input-area button:hover {
+  background: #833ab4; /* Instagram gradient effect */
+}
+
+/* Scrollbar */
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+#messages::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+/* ===== Mobile Responsiveness ===== */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+    height: auto;
+  }
+
+  .login-container, .chat-container {
+    max-width: 100%;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-box {
+    padding: 30px 20px;
+    border-radius: 0;
+  }
+
+  .login-box input, .login-box button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .chat-header {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  #messages {
+    padding: 10px;
+  }
+
+  .message .content {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .input-area input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .input-area button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .message .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
+/* ===== Mobile Responsiveness for iQOO Z9x ===== */
+@media (max-width: 768px) {
+  /* Chat Container */
+  .chat-container {
+    width: 100%;
+    height: 90vh;
+    border-radius: 12px;
+  }
+
+  /* Login Container */
+  .login-container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  /* Login Box */
+  .login-box {
+    padding: 25px 20px;
+  }
+
+  /* Input Fields */
+  .login-box input,
+  .input-area input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Buttons */
+  .login-box button,
+  .input-area button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Chat Header */
+  .chat-header {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  /* Message Bubbles */
+  .message {
+    max-width: 80%;
+  }
+
+  /* Avatars */
+  .message .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  /* Input Area */
+  .input-area {
+    padding: 8px;
+  }
+}
