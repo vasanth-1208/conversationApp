@@ -61,17 +61,32 @@ function appendMessage(sender, text, currentUser, id) {
   content.textContent = text;
   bubble.appendChild(content);
 
-  // Add delete button if it’s your own message
+  // Only allow menu for own messages
   if(sender === currentUser) {
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "❌";
-    delBtn.className = "delete-btn";
-    delBtn.onclick = async () => {
+    // Create menu container
+    const menuContainer = document.createElement("div");
+    menuContainer.className = "menu-container";
+
+    // Three-dot button
+    const menuBtn = document.createElement("button");
+    menuBtn.className = "menu-btn";
+    menuBtn.textContent = "⋮"; // three dots
+    menuContainer.appendChild(menuBtn);
+
+    // Dropdown menu
+    const dropdown = document.createElement("div");
+    dropdown.className = "dropdown-menu";
+    dropdown.style.display = "none";
+
+    const deleteOption = document.createElement("div");
+    deleteOption.className = "dropdown-item";
+    deleteOption.textContent = "Delete";
+    deleteOption.onclick = async () => {
       try {
         const res = await fetch(`https://conversationapp.onrender.com/messages/${id}`, { method: "DELETE" });
         if(res.ok) {
-          bubble.remove(); // Remove from DOM immediately
-          socket.emit("messageDeleted", id); // notify other clients
+          bubble.remove();
+          socket.emit("messageDeleted", id);
         } else {
           alert("Failed to delete message");
         }
@@ -80,12 +95,21 @@ function appendMessage(sender, text, currentUser, id) {
         alert("Error deleting message");
       }
     };
-    bubble.appendChild(delBtn);
+    dropdown.appendChild(deleteOption);
+    menuContainer.appendChild(dropdown);
+
+    // Toggle dropdown visibility
+    menuBtn.onclick = () => {
+      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    };
+
+    bubble.appendChild(menuContainer);
   }
 
   messagesDiv.appendChild(bubble);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
 
 
 
