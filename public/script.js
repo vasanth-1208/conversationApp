@@ -19,7 +19,7 @@ function login() {
 
 
 // ===== Socket.io connection =====
-const socket = io();
+const socket = io("https://conversationapp.onrender.com");
 
 // ===== Load Chat History =====
 async function loadMessages() {
@@ -27,7 +27,7 @@ async function loadMessages() {
   const username = localStorage.getItem("chatUser");
   if (!username) return;
 
-  const res = await fetch("/messages");
+  const res = await fetch("https://conversationapp.onrender.com/messages");
   const messages = await res.json();
 
   messagesDiv.innerHTML = "";
