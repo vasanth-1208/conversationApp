@@ -1,8 +1,8 @@
 
 // ===== Allowed Users =====
 const validUsers = {
-  user1: "123",
-  user2: "789",
+  user1: "1208",
+  user2: "120824",
 };
 
 // ===== Login =====
