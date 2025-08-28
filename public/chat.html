@@ -9,9 +9,18 @@
 <body>
   <div class="chat-container">
     <div class="chat-header" id="chatHeader">
-      <img id="headerAvatar" src="avatar1.jpg" alt="Avatar" class="header-avatar">
-      <span id="headerName">User</span>
+  <img id="headerAvatar" src="avatar1.jpg" alt="Avatar" class="header-avatar">
+  <span id="headerName">User</span>
+
+  <!-- Three-dot menu for delete -->
+  <div id="conversationMenu" class="conversation-menu">
+    <button id="menuBtn">⋮</button>
+    <div id="menuDropdown" class="menu-dropdown" style="display:none;">
+      <div id="enableDeleteMode">Delete Messages</div>
     </div>
+  </div>
+</div>
+
 
     <div id="messages"></div>
 

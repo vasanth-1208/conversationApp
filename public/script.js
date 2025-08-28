@@ -1,9 +1,11 @@
-
 // ===== Allowed Users =====
 const validUsers = {
   user1: "1208",
   user2: "120824",
 };
+
+let deleteMode = false;
+const selectedMessages = new Set();
 
 // ===== Login =====
 function login() {
@@ -17,7 +19,6 @@ function login() {
     alert("❌ Invalid username or password!");
   }
 }
-
 
 // ===== Socket.io connection =====
 const socket = io("https://conversationapp.onrender.com");
@@ -36,7 +37,6 @@ async function loadMessages() {
     appendMessage(msg.sender, msg.text, username, msg._id);
   });
 
-
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
@@ -45,9 +45,18 @@ function appendMessage(sender, text, currentUser, id) {
   const messagesDiv = document.getElementById("messages");
   const bubble = document.createElement("div");
   bubble.className = sender.toLowerCase() === currentUser.toLowerCase() ? "message sent" : "message received";
-
-  // Assign unique data-id to bubble
   bubble.setAttribute("data-id", id);
+
+  // Checkbox (visible only in delete mode)
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "message-checkbox";
+  checkbox.style.display = deleteMode ? "inline-block" : "none";
+  checkbox.onchange = (e) => {
+    if(e.target.checked) selectedMessages.add(id);
+    else selectedMessages.delete(id);
+  };
+  bubble.appendChild(checkbox);
 
   // Avatar
   const avatar = document.createElement("img");
@@ -55,63 +64,15 @@ function appendMessage(sender, text, currentUser, id) {
   avatar.src = sender === "user1" ? "avatar1.jpg" : sender === "user2" ? "avatar2.jpg" : "default.jpg";
   bubble.appendChild(avatar);
 
-  // Message content
+  // Content
   const content = document.createElement("div");
   content.className = "content";
   content.textContent = text;
   bubble.appendChild(content);
 
-  // Only allow menu for own messages
-  if(sender === currentUser) {
-    // Create menu container
-    const menuContainer = document.createElement("div");
-    menuContainer.className = "menu-container";
-
-    // Three-dot button
-    const menuBtn = document.createElement("button");
-    menuBtn.className = "menu-btn";
-    menuBtn.textContent = "⋮"; // three dots
-    menuContainer.appendChild(menuBtn);
-
-    // Dropdown menu
-    const dropdown = document.createElement("div");
-    dropdown.className = "dropdown-menu";
-    dropdown.style.display = "none";
-
-    const deleteOption = document.createElement("div");
-    deleteOption.className = "dropdown-item";
-    deleteOption.textContent = "Delete";
-    deleteOption.onclick = async () => {
-      try {
-        const res = await fetch(`https://conversationapp.onrender.com/messages/${id}`, { method: "DELETE" });
-        if(res.ok) {
-          bubble.remove();
-          socket.emit("messageDeleted", id);
-        } else {
-          alert("Failed to delete message");
-        }
-      } catch(err) {
-        console.error(err);
-        alert("Error deleting message");
-      }
-    };
-    dropdown.appendChild(deleteOption);
-    menuContainer.appendChild(dropdown);
-
-    // Toggle dropdown visibility
-    menuBtn.onclick = () => {
-      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-    };
-
-    bubble.appendChild(menuContainer);
-  }
-
   messagesDiv.appendChild(bubble);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
-
-
-
 
 // ===== Send Message =====
 function sendMessage() {
@@ -128,8 +89,48 @@ function sendMessage() {
 // ===== Receive new messages =====
 socket.on("newMessage", (msg) => {
   const username = localStorage.getItem("chatUser");
-  appendMessage(msg.sender, msg.text, username);
+  appendMessage(msg.sender, msg.text, username, msg._id);
 });
+
+// ===== Delete Messages =====
+async function deleteSelectedMessages() {
+  const promises = [];
+  selectedMessages.forEach(id => {
+    promises.push(fetch(`https://conversationapp.onrender.com/messages/${id}`, { method: "DELETE" }));
+  });
+
+  try {
+    await Promise.all(promises);
+    selectedMessages.forEach(id => {
+      const msgEl = document.querySelector(`[data-id='${id}']`);
+      if (msgEl) msgEl.remove();
+    });
+    selectedMessages.clear();
+    deleteMode = false;
+    document.querySelectorAll(".message-checkbox").forEach(cb => cb.style.display = "none");
+    const btn = document.getElementById("deleteSelectedBtn");
+    if (btn) btn.remove();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete some messages.");
+  }
+}
+
+// ===== Enable Delete Mode =====
+function enableDeleteMode() {
+  deleteMode = true;
+  document.querySelectorAll(".message-checkbox").forEach(cb => cb.style.display = "inline-block");
+
+  // Add a delete button on top
+  let delBtn = document.getElementById("deleteSelectedBtn");
+  if (!delBtn) {
+    delBtn = document.createElement("button");
+    delBtn.id = "deleteSelectedBtn";
+    delBtn.textContent = "Delete Selected";
+    delBtn.onclick = deleteSelectedMessages;
+    document.getElementById("chatHeader").appendChild(delBtn);
+  }
+}
 
 // ===== Protect Chat Page =====
 window.addEventListener("DOMContentLoaded", () => {
@@ -142,20 +143,31 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   if (chatHeader && username) {
-  // Determine the opposite user
-  const otherUser = username === "user1" ? "user2" : "user1";
-  
-  // Set header name and avatar
-  document.getElementById("headerName").textContent = otherUser;
-  const avatarImg = document.getElementById("headerAvatar");
-  avatarImg.src = otherUser === "user1" ? "avatar1.jpg" : "avatar2.jpg";
+    // Determine the opposite user
+    const otherUser = username === "user1" ? "user2" : "user1";
 
-  loadMessages();
+    // Set header name and avatar
+    document.getElementById("headerName").textContent = otherUser;
+    const avatarImg = document.getElementById("headerAvatar");
+    avatarImg.src = otherUser === "user1" ? "avatar1.jpg" : "avatar2.jpg";
 
-  document.getElementById("sendBtn").addEventListener("click", sendMessage);
-  document.getElementById("messageInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-}
+    loadMessages();
 
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("messageInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // Three-dot menu click
+    const menuBtn = document.getElementById("menuBtn");
+    const menuDropdown = document.getElementById("menuDropdown");
+    menuBtn.onclick = () => {
+      menuDropdown.style.display = menuDropdown.style.display === "none" ? "block" : "none";
+    };
+
+    document.getElementById("enableDeleteMode").onclick = () => {
+      menuDropdown.style.display = "none";
+      enableDeleteMode();
+    };
+  }
 });
