@@ -93,28 +93,34 @@ socket.on("newMessage", (msg) => {
 });
 
 // ===== Delete Messages =====
+// ===== Delete Messages =====
 async function deleteSelectedMessages() {
-  const promises = [];
-  selectedMessages.forEach(id => {
-    promises.push(fetch(`https://conversationapp.onrender.com/messages/${id}`, { method: "DELETE" }));
-  });
+  for (let id of selectedMessages) {
+    try {
+      const res = await fetch(`https://conversationapp.onrender.com/messages/${id}`, {
+        method: "DELETE"
+      });
 
-  try {
-    await Promise.all(promises);
-    selectedMessages.forEach(id => {
-      const msgEl = document.querySelector(`[data-id='${id}']`);
-      if (msgEl) msgEl.remove();
-    });
-    selectedMessages.clear();
-    deleteMode = false;
-    document.querySelectorAll(".message-checkbox").forEach(cb => cb.style.display = "none");
-    const btn = document.getElementById("deleteSelectedBtn");
-    if (btn) btn.remove();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete some messages.");
+      if (!res.ok) {
+        console.error(`Failed to delete message ${id}`);
+        alert("⚠️ Failed to delete some messages.");
+      } else {
+        const msgEl = document.querySelector(`[data-id='${id}']`);
+        if (msgEl) msgEl.remove();
+      }
+    } catch (err) {
+      console.error("Error deleting:", err);
+      alert("⚠️ Failed to delete some messages.");
+    }
   }
+
+  selectedMessages.clear();
+  deleteMode = false;
+  document.querySelectorAll(".message-checkbox").forEach(cb => cb.style.display = "none");
+  const btn = document.getElementById("deleteSelectedBtn");
+  if (btn) btn.remove();
 }
+
 
 // ===== Enable Delete Mode =====
 function enableDeleteMode() {

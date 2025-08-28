@@ -70,6 +70,24 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+// Delete a single message
+// Delete a single message
+app.delete("/messages/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Message.findByIdAndDelete(id);
+
+    if (!result) {
+      return res.status(404).json({ success: false, error: "Message not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting message:", err);
+    res.status(500).json({ success: false, error: "Failed to delete message" });
+  }
+});
+
 
 // Start server
 server.listen(PORT, () => {
