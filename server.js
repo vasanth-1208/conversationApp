@@ -12,10 +12,21 @@ const server = http.createServer(app);
 
 // Socket.io
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "https://conversationapp-1.onrender.com", // frontend URL
+    methods: ["GET", "POST"]
+  }
+});
+
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://conversationapp-1.onrender.com", // frontend URL
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
