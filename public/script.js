@@ -1,3 +1,5 @@
+require('dotenv').config(); 
+
 // ===== Allowed Users =====
 const validUsers = {
   user1: "123",

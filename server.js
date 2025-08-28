@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const http = require("http");
+require('dotenv').config();
+
 
 const app = express();
-const PORT = 5000;
 
 // Create HTTP server for Socket.io
 const server = http.createServer(app);
-
+const PORT = process.env.PORT || 5000;
 // Socket.io
 const { Server } = require("socket.io");
 const io = new Server(server, {
@@ -32,10 +33,7 @@ app.use(express.static("public"));
 
 // MongoDB connection
 // MongoDB connection
-mongoose.connect(
-  "mongodb+srv://viper:viper%40120824@cluster0.g6zjhu9.mongodb.net/chat-app?retryWrites=true&w=majority",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-);
+mongoose.connect(process.env.MONGO_URI);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
