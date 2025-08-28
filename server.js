@@ -75,3 +75,16 @@ io.on("connection", (socket) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Delete a message by ID
+app.delete("/messages/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedMessage = await Message.findByIdAndDelete(id);
+    if (!deletedMessage) return res.status(404).json({ error: "Message not found" });
+    io.emit("deleteMessage", id); // notify all clients
+    res.json({ success: true, id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});

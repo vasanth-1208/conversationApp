@@ -33,41 +33,60 @@ async function loadMessages() {
 
   messagesDiv.innerHTML = "";
   messages.forEach((msg) => {
-    appendMessage(msg.sender, msg.text, username);
+    appendMessage(msg.sender, msg.text, username, msg._id);
   });
+
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 // ===== Append message to chat =====
-function appendMessage(sender, text, currentUser) {
+function appendMessage(sender, text, currentUser, id) {
   const messagesDiv = document.getElementById("messages");
   const bubble = document.createElement("div");
-  
-  // Normalize both to lowercase for comparison
   bubble.className = sender.toLowerCase() === currentUser.toLowerCase() ? "message sent" : "message received";
+
+  // Assign unique data-id to bubble
+  bubble.setAttribute("data-id", id);
 
   // Avatar
   const avatar = document.createElement("img");
   avatar.className = "avatar";
-  if(sender === "user1") {
-    avatar.src = "avatar1.jpg"; // path to your image
-  } else if(sender === "user2") {
-    avatar.src = "avatar2.jpg"; // path to second image
-  } else {
-    avatar.src = "default.jpg"; // fallback image
-  }
+  avatar.src = sender === "user1" ? "avatar1.jpg" : sender === "user2" ? "avatar2.jpg" : "default.jpg";
   bubble.appendChild(avatar);
 
-
+  // Message content
   const content = document.createElement("div");
   content.className = "content";
   content.textContent = text;
   bubble.appendChild(content);
 
+  // Add delete button if it’s your own message
+  if(sender === currentUser) {
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "❌";
+    delBtn.className = "delete-btn";
+    delBtn.onclick = async () => {
+      try {
+        const res = await fetch(`https://conversationapp.onrender.com/messages/${id}`, { method: "DELETE" });
+        if(res.ok) {
+          bubble.remove(); // Remove from DOM immediately
+          socket.emit("messageDeleted", id); // notify other clients
+        } else {
+          alert("Failed to delete message");
+        }
+      } catch(err) {
+        console.error(err);
+        alert("Error deleting message");
+      }
+    };
+    bubble.appendChild(delBtn);
+  }
+
   messagesDiv.appendChild(bubble);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
 
 
 // ===== Send Message =====
