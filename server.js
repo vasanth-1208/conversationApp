@@ -20,10 +20,16 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 // MongoDB connection
-mongoose.connect("mongodb+srv://viper:viper@120824@cluster0.g6zjhu9.mongodb.net/");
+// MongoDB connection
+mongoose.connect(
+  "mongodb+srv://viper:viper%40120824@cluster0.g6zjhu9.mongodb.net/chat-app?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
+
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", () => console.log("MongoDB connected"));
+
 
 // Message Schema
 const messageSchema = new mongoose.Schema({
