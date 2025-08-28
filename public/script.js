@@ -92,7 +92,12 @@ socket.on("newMessage", (msg) => {
   appendMessage(msg.sender, msg.text, username, msg._id);
 });
 
-// ===== Delete Messages =====
+// ===== Receive deleted messages =====
+socket.on("deleteMessage", (id) => {
+  const msgEl = document.querySelector(`[data-id='${id}']`);
+  if (msgEl) msgEl.remove();
+});
+
 // ===== Delete Messages =====
 async function deleteSelectedMessages() {
   for (let id of selectedMessages) {
