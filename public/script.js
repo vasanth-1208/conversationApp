@@ -1,24 +1,21 @@
-// ===== Allowed Users =====
-const validUsers = {
-  user1: "1208",
-  user2: "120824",
-};
-
-let deleteMode = false;
-const selectedMessages = new Set();
-
-// ===== Login =====
 function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if (validUsers[username] && validUsers[username] === password) {
+  // Get current time (HHMM)
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  const currentCode = hh + mm; // Example: "1432"
+
+  if (password === currentCode) {
     localStorage.setItem("chatUser", username);
     window.location.href = "chat.html";
   } else {
-    alert("❌ Invalid username or password!");
+    alert("❌ Invalid password. Try again!");
   }
 }
+
 
 // ===== Socket.io connection =====
 const socket = io("https://conversationapp.onrender.com");
@@ -180,5 +177,39 @@ window.addEventListener("DOMContentLoaded", () => {
       menuDropdown.style.display = "none";
       enableDeleteMode();
     };
+  }
+});
+// ===== Logout =====
+function logout() {
+  localStorage.removeItem("chatUser"); // clear user session
+  window.location.href = "index.html"; // redirect to login page
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById("menuBtn");
+  const menuDropdown = document.getElementById("menuDropdown");
+
+  if (menuBtn) {
+    menuBtn.onclick = () => {
+      menuDropdown.style.display = menuDropdown.style.display === "none" ? "block" : "none";
+    };
+
+    // Delete mode
+    const deleteModeBtn = document.getElementById("enableDeleteMode");
+    if (deleteModeBtn) {
+      deleteModeBtn.onclick = () => {
+        menuDropdown.style.display = "none";
+        enableDeleteMode();
+      };
+    }
+
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.onclick = () => {
+        menuDropdown.style.display = "none";
+        logout();
+      };
+    }
   }
 });
